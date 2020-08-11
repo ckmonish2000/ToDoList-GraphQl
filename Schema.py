@@ -1,6 +1,8 @@
 import graphene
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
-
+from flask import Flask
+from flask_cors import CORS
+from flask_graphql import GraphQLView
 meta = MetaData()
 engine = create_engine('sqlite:///todo.db', echo=True)
 
@@ -8,7 +10,7 @@ todo = Table("todo", meta, Column("id", Integer, primary_key=True),
              Column("todo", String))
 
 meta.create_all(engine)
-conn = engine.connect()
+
 
 # ins = todo.insert().values(todo="dishes")
 # result = conn.execute(ins)
@@ -30,6 +32,7 @@ class CreateTodo(graphene.Mutation):
     todos = graphene.Field(todoo)
 
     def mutate(root, info, task):
+        conn = engine.connect()
         todos = todoo(task=task)
         x = todo.insert().values(todo=task)
         conn.execute(x)
@@ -43,6 +46,7 @@ class DelTodo(graphene.Mutation):
     ok = graphene.Boolean()
 
     def mutate(root, info, id):
+        conn = engine.connect()
         conn.execute(todo.delete().where(todo.c.id == id))
         ok = True
         return DelTodo(ok=ok)
@@ -56,6 +60,7 @@ class UpdateTodo(graphene.Mutation):
     ok = graphene.Boolean()
 
     def mutate(root, info, id, task):
+        conn = engine.connect()
         x = todo.update().where(todo.c.id == id).values(todo=task)
         conn.execute(x)
         return UpdateTodo(ok=True)
@@ -72,6 +77,7 @@ class Query(graphene.ObjectType):
     todolist = graphene.List(graphene.String)
 
     def resolve_todolist(root, info):
+        conn = engine.connect()
         lst = []
         x = todo.select()
         result = conn.execute(x)
@@ -80,6 +86,7 @@ class Query(graphene.ObjectType):
         return lst
 
     def resolve_todo(root, info, id):
+        conn = engine.connect()
         x = todo.select().where(todo.c.id == id)
         result = conn.execute(x)
         for i in result:
@@ -117,3 +124,18 @@ schema = graphene.Schema(query=Query, mutation=Mutations)
 # }
 # ''')
 # print(result.data)
+
+
+app = Flask(__name__)
+CORS(app)
+
+
+app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
+    'graphql',
+    schema=schema,
+    graphiql=True,
+))
+
+
+if __name__=="__main__":
+    app.run(debug=True)
