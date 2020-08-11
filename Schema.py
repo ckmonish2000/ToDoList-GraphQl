@@ -48,9 +48,23 @@ class DelTodo(graphene.Mutation):
         return DelTodo(ok=ok)
 
 
+class UpdateTodo(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int()
+        task = graphene.String()
+
+    ok = graphene.Boolean()
+
+    def mutate(root, info, id, task):
+        x = todo.update().where(todo.c.id == id).values(todo=task)
+        conn.execute(x)
+        return UpdateTodo(ok=True)
+
+
 class Mutations(graphene.ObjectType):
     TodoCreate = CreateTodo.Field()
     TodoDel = DelTodo.Field()
+    UpdateTodos = UpdateTodo.Field()
 
 
 class Query(graphene.ObjectType):
@@ -77,7 +91,7 @@ schema = graphene.Schema(query=Query, mutation=Mutations)
 
 # result = schema.execute('''
 # mutation myfirstMutation{
-#     TodoCreate(task:"chore"){
+#     TodoCreate(task:"code"){
 #         todos{
 #             task
 #         }
@@ -86,18 +100,20 @@ schema = graphene.Schema(query=Query, mutation=Mutations)
 
 # ''')
 
-result = schema.execute('''
-mutation delmutation{
-    TodoDel(id:10){
-     ok
-    }
-}
-''')
-print(result.data)
+# print(result.data)
 
-result = schema.execute('''
-{
-    todolist
-}
-''')
-print(result.data)
+# result = schema.execute('''
+# mutation delmutation{
+#     UpdateTodos(id:1,task:"man makers"){
+#      ok
+#     }
+# }
+# ''')
+# print(result.data)
+
+# result = schema.execute('''
+# {
+#     todolist
+# }
+# ''')
+# print(result.data)
