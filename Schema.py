@@ -3,21 +3,13 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from flask import Flask
 from flask_cors import CORS
 from flask_graphql import GraphQLView
+
 meta = MetaData()
 engine = create_engine('sqlite:///todo.db', echo=True)
 
 todo = Table("todo", meta, Column("id", Integer, primary_key=True),
              Column("todo", String))
-
 meta.create_all(engine)
-
-
-# ins = todo.insert().values(todo="dishes")
-# result = conn.execute(ins)
-# x = todo.select()
-# result = conn.execute(x)
-# for i in result:
-#     print(i)
 
 
 class todoo(graphene.ObjectType):
@@ -96,6 +88,21 @@ class Query(graphene.ObjectType):
 
 schema = graphene.Schema(query=Query, mutation=Mutations)
 
+app = Flask(__name__)
+CORS(app)
+
+app.add_url_rule('/graphql',
+                 view_func=GraphQLView.as_view(
+                     'graphql',
+                     schema=schema,
+                     graphiql=True,
+                 ))
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+# example Query
+
 # result = schema.execute('''
 # mutation myfirstMutation{
 #     TodoCreate(task:"code"){
@@ -124,18 +131,3 @@ schema = graphene.Schema(query=Query, mutation=Mutations)
 # }
 # ''')
 # print(result.data)
-
-
-app = Flask(__name__)
-CORS(app)
-
-
-app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
-    'graphql',
-    schema=schema,
-    graphiql=True,
-))
-
-
-if __name__=="__main__":
-    app.run(debug=True)
