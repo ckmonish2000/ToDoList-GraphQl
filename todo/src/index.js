@@ -12,7 +12,7 @@ export default function Index() {
   return (
     <ApolloProvider client={client}>
       <div>
-        <h2>My first Apollo app 🚀</h2>
+        <h2>ToDo Apollo app 🚀</h2>
         <App />
       </div>
     </ApolloProvider>

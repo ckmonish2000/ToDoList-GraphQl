@@ -1,21 +1,31 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 
 export default function App() {
+  const [dataz, setDataz] = useState(0);
   var query = gql`
     {
       todolist
     }
   `;
+  console.log(dataz);
   const { loading, error, data } = useQuery(query);
 
   if (loading) return <h1>loading...</h1>;
   if (error) return <h1>{`error: ${error}`}</h1>;
   console.log(data.todolist);
+  var z = 0;
   return (
     <ol>
       {data.todolist.map((e) => {
-        return <li>{e}</li>;
+        z += 1;
+        var x = z;
+        return (
+          <li>
+            {e}
+            {z}
+          </li>
+        );
       })}
     </ol>
   );
