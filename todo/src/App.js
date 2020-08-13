@@ -1,6 +1,6 @@
 import React, { Component, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-
+import Mutate from "./mutate";
 export default function App() {
   const [dataz, setDataz] = useState(0);
   var query = gql`
@@ -16,17 +16,20 @@ export default function App() {
   console.log(data.todolist);
   var z = 0;
   return (
-    <ol>
-      {data.todolist.map((e) => {
-        z += 1;
-        var x = z;
-        return (
-          <li>
-            {e}
-            {z}
-          </li>
-        );
-      })}
-    </ol>
+    <div>
+      <Mutate />
+      <ol>
+        {data.todolist.map((e) => {
+          z += 1;
+          var x = z;
+          return (
+            <li>
+              {e}
+              {z}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
