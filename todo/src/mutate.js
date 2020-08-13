@@ -12,13 +12,19 @@ const Add_todo = gql`
 `;
 
 export default function Mutate() {
+  var [TodoCreate, { data }] = useMutation(Add_todo);
+
   var [input, setInput] = useState(null);
   var changing = (e) => {
     setInput(e.target.value);
   };
   var submit = (e) => {
     e.preventDefault();
-    console.log(input);
+    TodoCreate({
+      variables: {
+        task: input,
+      },
+    });
     setInput(null);
   };
   return (
