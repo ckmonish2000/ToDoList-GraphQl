@@ -1,26 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { gql, useQuery } from "@apollo/client";
 
-function App() {
+export default function App() {
+  var query = gql`
+    {
+      todolist
+    }
+  `;
+  const { loading, error, data } = useQuery(query);
+
+  if (loading) return <h1>loading...</h1>;
+  if (error) return <h1>{`error: ${error}`}</h1>;
+  console.log(data.todolist);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ol>
+      {data.todolist.map((e) => {
+        return <li>{e}</li>;
+      })}
+    </ol>
   );
 }
-
-export default App;

@@ -1,7 +1,7 @@
 import graphene
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from flask import Flask
-from flask_cors import CORS
+from flask_cors import CORS,cross_origin
 from flask_graphql import GraphQLView
 
 meta = MetaData()
@@ -89,7 +89,8 @@ class Query(graphene.ObjectType):
 schema = graphene.Schema(query=Query, mutation=Mutations)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, allow_headers=['Content-Type'])
+
 
 app.add_url_rule('/graphql',
                  view_func=GraphQLView.as_view(
