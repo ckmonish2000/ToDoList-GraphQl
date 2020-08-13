@@ -11,7 +11,7 @@ const Add_todo = gql`
   }
 `;
 
-export default function Mutate() {
+export default function Mutate(props) {
   var [TodoCreate, { data }] = useMutation(Add_todo);
 
   var [input, setInput] = useState(null);

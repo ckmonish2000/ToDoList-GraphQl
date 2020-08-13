@@ -74,6 +74,7 @@ class Query(graphene.ObjectType):
         x = todo.select()
         result = conn.execute(x)
         for i in result:
+            print(i)
             lst.append(i[1])
         return lst
 
